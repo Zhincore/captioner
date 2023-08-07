@@ -1,13 +1,17 @@
 <script lang="ts">
-  import { convertFileSrc } from "@tauri-apps/api/tauri";
-  import Scaler from "./Scaler.svelte";
-  import Fa from "svelte-fa";
-  import { faImage } from "@fortawesome/free-solid-svg-icons";
+  import { faBackward, faForward, faImage, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
   import { readTextFile } from "@tauri-apps/api/fs";
+  import { convertFileSrc } from "@tauri-apps/api/tauri";
+  import { createEventDispatcher, tick } from "svelte";
+  import Fa from "svelte-fa";
   import LoadingOverlay from "./LoadingOverlay.svelte";
-  import { tick } from "svelte";
+  import Scaler from "./Scaler.svelte";
 
   const captionCache = new Map<string, string>();
+  const event = createEventDispatcher<{
+    next: null;
+    previous: null;
+  }>();
 
   export let selectedPath: string | null = null;
   export let unsavedFiles: string[] = [];
@@ -50,7 +54,7 @@
         .then((result) => {
           caption = result;
         })
-        .catch((err) => {
+        .catch(() => {
           caption = "";
         })
         .finally(() => (loadingCaption = false));
@@ -86,7 +90,7 @@
 
   <div
     bind:this={ref}
-    class="relative h-full min-h-[4rem] w-full"
+    class="relative flex h-full min-h-[8rem] w-full flex-col"
     style="{horizontal ? 'width' : 'height'}: {size ? size + 'px' : 'unset'}"
   >
     <Scaler reference={ref} bind:size direction="top" />
@@ -99,5 +103,24 @@
       placeholder={selectedPath ? "A photo of an image with a caption" : "Choose an image in the left panel"}
       bind:value={caption}
     />
+
+    <div class="flex gap-1">
+      <button class="-mt-1 w-1/2 bg-zinc-800 p-2 hover:bg-zinc-700" on:click={() => event("previous")}>
+        <Fa icon={faBackward} class="mr-2 inline-block" />
+        Previous
+      </button>
+      <button class="-mt-1 w-1/2 bg-zinc-800 p-2 hover:bg-zinc-700">
+        <Fa icon={faUndo} class="mr-2 inline-block" />
+        Reset
+      </button>
+      <button class="-mt-1 w-full bg-zinc-800 p-2 hover:bg-zinc-700">
+        <Fa icon={faSave} class="mr-2 inline-block" />
+        Save
+      </button>
+      <button class="-mt-1 w-1/2 bg-zinc-800 p-2 hover:bg-zinc-700" on:click={() => event("next")}>
+        Next
+        <Fa icon={faForward} class="ml-2 inline-block" />
+      </button>
+    </div>
   </div>
 </main>

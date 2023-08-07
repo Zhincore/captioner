@@ -1,13 +1,9 @@
 <script lang="ts">
   import { open } from "@tauri-apps/api/dialog";
-  import { convertFileSrc } from "@tauri-apps/api/tauri";
   import { readDir, type FileEntry } from "@tauri-apps/api/fs";
-  import SidePane from "./lib/SidePane.svelte";
-  import MainPane from "./lib/MainPane.svelte";
-  import Fa from "svelte-fa";
-  import { faSpinner } from "@fortawesome/free-solid-svg-icons";
   import LoadingOverlay from "./lib/LoadingOverlay.svelte";
-  import { tick } from "svelte";
+  import MainPane from "./lib/MainPane.svelte";
+  import SidePane from "./lib/SidePane.svelte";
 
   let folder: string | null = import.meta.hot?.data.folder ?? null;
   let files: FileEntry[] = [];

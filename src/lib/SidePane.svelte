@@ -1,13 +1,13 @@
 <script lang="ts">
-  import Fa from "svelte-fa";
-  import FileTree from "./FileTree.svelte";
   import { faFolderOpen } from "@fortawesome/free-solid-svg-icons";
   import type { FileEntry } from "@tauri-apps/api/fs";
+  import Fa from "svelte-fa";
+  import FileTree from "./FileTree.svelte";
   import Scaler from "./Scaler.svelte";
 
   export let folder = "";
   export let files: FileEntry[];
-  export let openFolder: () => {};
+  export let openFolder: () => void;
   export let selectedPath: string | null = null;
 
   let ref: HTMLElement;
