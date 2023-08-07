@@ -2,8 +2,7 @@
   import { faCaretDown, faCaretLeft, faFolder, faImage } from "@fortawesome/free-solid-svg-icons";
   import type { FileEntry } from "@tauri-apps/api/fs";
   import Fa from "svelte-fa";
-
-  const allowedExtensions = ["png", "jpg", "jpeg", "webp"];
+  import { filterFiles } from "./fileFilter";
 
   export let files: FileEntry[];
   export let level = 0;
@@ -26,13 +25,7 @@
     return () => (selectedPath = file.path == selectedPath ? null : file.path);
   }
 
-  $: filtered = files
-    .filter((file) => file.children || allowedExtensions.includes(file.name.split(".").slice(-1)[0]))
-    .sort((a, b) => {
-      const folders = +!!b.children - +!!a.children;
-      if (folders) return folders;
-      return a.name.localeCompare(b.name);
-    });
+  $: filtered = filterFiles(files);
 </script>
 
 <ul class={"h-full border-zinc-600 " + classes} class:overflow-auto={!level} class:ml-4={level} class:border-l={level}>

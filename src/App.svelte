@@ -4,6 +4,7 @@
   import LoadingOverlay from "./lib/LoadingOverlay.svelte";
   import MainPane from "./lib/MainPane.svelte";
   import SidePane from "./lib/SidePane.svelte";
+  import { filterFiles } from "./lib/fileFilter";
 
   let folder: string | null = import.meta.hot?.data.folder ?? null;
   let files: FileEntry[] = [];
@@ -20,6 +21,26 @@
       directory: true,
       recursive: true,
     })) as string;
+  }
+
+  function selectSibling(direction: 1 | -1) {
+    if (!selectedPath) return;
+
+    const traverse = (nodes: FileEntry[]): [FileEntry[], number] | undefined => {
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+        if (node.path == selectedPath) return [nodes, i];
+        if (node.children) {
+          const result = traverse(filterFiles(node.children));
+          if (result) return result;
+        }
+      }
+    };
+
+    const [siblings, index] = traverse(filterFiles(files)) ?? [];
+    if (!siblings) return;
+
+    selectedPath = siblings[(siblings.length + (index + direction)) % siblings.length].path;
   }
 
   $: if (folder) {
@@ -48,6 +69,6 @@
   <div class="flex h-screen w-screen">
     <SidePane {folder} {files} {openFolder} bind:selectedPath />
 
-    <MainPane {selectedPath} />
+    <MainPane {selectedPath} on:next={() => selectSibling(1)} on:previous={() => selectSibling(-1)} />
   </div>
 {/if}
