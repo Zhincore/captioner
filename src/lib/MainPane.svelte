@@ -5,6 +5,7 @@
   import { faImage } from "@fortawesome/free-solid-svg-icons";
   import { readTextFile } from "@tauri-apps/api/fs";
   import LoadingOverlay from "./LoadingOverlay.svelte";
+  import { tick } from "svelte";
 
   const captionCache = new Map<string, string>();
 
@@ -12,6 +13,7 @@
   export let unsavedFiles: string[] = [];
   $: captionPath = selectedPath ? selectedPath.split(".").slice(0, -1).join(".") + ".txt" : "";
 
+  let lastPath = selectedPath;
   let caption = "";
 
   let loadingCaption = false;
@@ -22,16 +24,26 @@
   let horizontal = false;
   let size = 100;
 
+  $: {
+    selectedPath; // Dependency
+    unsavedFiles = Array.from(captionCache.keys());
+  }
+
   $: if (selectedPath) {
     // Save state
-    if (caption) captionCache.set(selectedPath, caption);
+    if (caption) captionCache.set(lastPath, caption);
 
     // Set new state
+    lastPath = selectedPath;
     caption = captionCache.get(selectedPath) ?? "";
 
     // Start loading
     loadingImage = true;
     loadingCaption = !caption;
+
+    tick().then(() => {
+      if (img?.complete) loadingImage = true;
+    });
 
     if (!caption) {
       readTextFile(captionPath)

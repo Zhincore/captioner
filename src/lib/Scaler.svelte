@@ -42,7 +42,7 @@
   role="presentation"
   on:mousedown|preventDefault={() => (dragging = true)}
   class={[
-    "absolute z-50 flex transform items-center justify-center opacity-50",
+    "absolute z-40 flex transform items-center justify-center opacity-50",
     {
       top: "bottom-full",
       right: "left-full",
