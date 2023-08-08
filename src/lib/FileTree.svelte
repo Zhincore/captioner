@@ -13,6 +13,7 @@
   let classes = "";
   export { classes as class };
 
+  let items: Record<string, HTMLButtonElement> = {};
   let openFolders: string[] = [];
   let files: FileEntry[] = [];
   let error = "";
@@ -32,13 +33,13 @@
   }
 
   function selectSibling(direction: 1 | -1) {
-    console.log(selectedPath, path);
     if (!selectedPath || !selectedPath.startsWith(path)) return;
 
     const index = files.findIndex((v) => v.path == selectedPath);
     if (index == -1) return;
 
     selectedPath = files[(files.length + (index + direction)) % files.length].path;
+    items[selectedPath].focus();
   }
 
   onMount(() => {
@@ -90,6 +91,7 @@
     {@const isOpen = openFolders.includes(file.path)}
     <li>
       <button
+        bind:this={items[file.path]}
         class={[
           "relative -ml-px flex w-full items-center whitespace-nowrap border-l border-transparent bg-opacity-50 px-4 py-1 transition hover:bg-zinc-800",
           unsavedPaths.some((v) => v.startsWith(file.path)) ? "!border-modified text-modified" : "",

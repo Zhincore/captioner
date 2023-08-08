@@ -45,9 +45,11 @@
       return Promise.all(promises);
     };
 
+    appEvents.on("saveFile", save);
     appEvents.on("saveAllFiles", saveAll);
 
     return () => {
+      appEvents.off("saveFile", save);
       appEvents.off("saveAllFiles", saveAll);
     };
   });
@@ -96,6 +98,7 @@
   {#if loadingCaption}<LoadingOverlay />{/if}
 
   <textarea
+    on:keydown|stopPropagation
     class="h-full w-full resize-none bg-black bg-opacity-50 px-2 py-1 text-white placeholder:text-zinc-600 disabled:opacity-50"
     disabled={!ready}
     placeholder={selectedPath ? "A photo of an image with a caption" : "Choose an image in the left panel"}
