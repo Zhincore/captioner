@@ -37,7 +37,7 @@
     </button>
   </header>
 
-  <FileTree {path} {unsavedPaths} bind:selectedPath class="mr-2" />
+  <FileTree {path} {unsavedPaths} bind:selectedPath />
 
   <Scaler bind:size={width} reference={ref} direction="right" />
 </side>

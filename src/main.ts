@@ -1,11 +1,11 @@
 import "./styles.css";
-import { init } from "@neutralinojs/lib";
 import App from "./App.svelte";
+import { loadNeu } from "./lib/neu";
+
+loadNeu();
 
 const app = new App({
   target: document.getElementById("app"),
 });
-
-init();
 
 export default app;

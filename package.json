@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -k 'vite' 'neu run --frontend-lib-dev'",
-    "build": "vite build",
+    "build": "vite build && neu build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "lint": "eslint --fix src",

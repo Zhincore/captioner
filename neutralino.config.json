@@ -21,7 +21,11 @@
     "filesystem.readBinaryFile"
   ],
   "globalVariables": {},
-  "modes": {},
+  "modes": {
+    "window": {
+      "icon": "/captioner.png"
+    }
+  },
   "cli": {
     "binaryName": "captioner",
     "resourcesPath": "/build/",
