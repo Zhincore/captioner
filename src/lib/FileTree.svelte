@@ -1,20 +1,23 @@
 <script lang="ts">
   import { faCaretDown, faCaretLeft, faFolder, faImage } from "@fortawesome/free-solid-svg-icons";
-  import type { FileEntry } from "@tauri-apps/api/fs";
   import Fa from "svelte-fa";
-  import { filterFiles } from "./fileFilter";
+  import LoadingOverlay from "./LoadingOverlay.svelte";
+  import { loadFiles, type FileEntry } from "./files";
 
-  export let files: FileEntry[];
+  export let path = "";
   export let level = 0;
   export let selectedPath: string | null = null;
   let classes = "";
   export { classes as class };
 
   let openFolders: string[] = [];
+  let files: FileEntry[] = [];
+  let error = "";
+  let loading = true;
 
   function getClickHandler(file: FileEntry) {
     // Folder handler
-    if (file.children) {
+    if (file.isDirectory) {
       return () => {
         const index = openFolders.indexOf(file.path);
         if (index == -1) openFolders = [...openFolders, file.path];
@@ -25,11 +28,18 @@
     return () => (selectedPath = file.path == selectedPath ? null : file.path);
   }
 
-  $: filtered = filterFiles(files);
+  $: if (path) {
+    error = "";
+    loading = true;
+    loadFiles(path)
+      .then((result) => (files = result))
+      .catch((err) => (error = err.toString()))
+      .finally(() => (loading = false));
+  }
 </script>
 
 <ul class={"h-full border-zinc-600 " + classes} class:overflow-auto={!level} class:ml-4={level} class:border-l={level}>
-  {#each filtered as file (file.path)}
+  {#each files as file (file.path)}
     {@const isOpen = openFolders.includes(file.path)}
     <li>
       <button
@@ -37,16 +47,16 @@
           (selectedPath?.startsWith(file.path) ? " -ml-px border-l border-accent text-accent" : "")}
         on:click={getClickHandler(file)}
       >
-        <Fa icon={file.children ? faFolder : faImage} class="mr-2 inline-block" />
+        <Fa icon={file.isDirectory ? faFolder : faImage} class="mr-2 inline-block" />
         <span>{file.name}</span>
 
-        {#if file.children}
-          <Fa icon={openFolders.includes(file.path) ? faCaretDown : faCaretLeft} class="ml-auto inline-block" />
+        {#if file.isDirectory}
+          <Fa icon={isOpen ? faCaretDown : faCaretLeft} class="ml-auto inline-block" />
         {/if}
       </button>
 
-      {#if file.children && isOpen}
-        <svelte:self files={file.children} bind:selectedPath level={level + 1} />
+      {#if file.isDirectory && isOpen}
+        <svelte:self path={file.path} bind:selectedPath level={level + 1} />
       {/if}
     </li>
   {/each}

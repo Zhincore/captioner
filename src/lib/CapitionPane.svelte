@@ -7,7 +7,7 @@
 
 <script lang="ts">
   import { faBackward, faForward, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
-  import { readTextFile } from "@tauri-apps/api/fs";
+  import { filesystem } from "@neutralinojs/lib";
   import { createEventDispatcher } from "svelte";
   import Fa from "svelte-fa";
   import LoadingOverlay from "./LoadingOverlay.svelte";
@@ -25,6 +25,7 @@
   $: captionPath = selectedPath ? selectedPath.split(".").slice(0, -1).join(".") + ".txt" : "";
   let loadedCaption = "";
   let lastPath = selectedPath;
+  let newCaption = loadedCaption;
   let loadingCaption = false;
 
   // Store state
@@ -36,14 +37,16 @@
   $: if (selectedPath) {
     // Set new state
     lastPath = selectedPath;
-    loadedCaption = captionCache.get(selectedPath) ?? "";
-    // newCaption = loadedCaption;
+
+    const cached = captionCache.get(selectedPath);
+    loadedCaption = cached ?? "";
 
     // Start loading
-    loadingCaption = !loadedCaption;
+    loadingCaption = !cached;
 
-    if (!loadedCaption) {
-      readTextFile(captionPath)
+    if (!cached) {
+      filesystem
+        .readFile(captionPath)
         .then((result) => {
           loadedCaption = result;
         })

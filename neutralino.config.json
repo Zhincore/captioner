@@ -1,0 +1,36 @@
+{
+  "$schema": "https://raw.githubusercontent.com/neutralinojs/neutralinojs/main/schemas/neutralino.config.schema.json",
+  "applicationId": "eu.zhincore.captioner",
+  "version": "1.0.0",
+  "defaultMode": "browser",
+  "port": 0,
+  "documentRoot": "/build/",
+  "url": "/",
+  "enableServer": true,
+  "enableNativeAPI": true,
+  "tokenSecurity": "one-time",
+  "logging": {
+    "enabled": true,
+    "writeToLogFile": false
+  },
+  "nativeAllowList": [
+    "os.showFolderDialog",
+    "filesystem.readDirectory",
+    "filesystem.readFile",
+    "filesystem.writeFile",
+    "filesystem.readBinaryFile"
+  ],
+  "globalVariables": {},
+  "modes": {},
+  "cli": {
+    "binaryName": "captioner",
+    "resourcesPath": "/build/",
+    "extensionsPath": "/extensions/",
+    "binaryVersion": "4.13.0",
+    "clientVersion": "3.11.0",
+    "frontendLibrary": {
+      "patchFile": "/index.html",
+      "devUrl": "http://localhost:3000"
+    }
+  }
+}
