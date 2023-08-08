@@ -7,6 +7,9 @@ export default {
         accent: {
           DEFAULT: "#55ffff",
         },
+        modified: {
+          DEFAULT: "#ff8000",
+        },
       },
     },
   },

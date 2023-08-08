@@ -19,10 +19,28 @@
   let lastPath = selectedPath;
   let loadingCaption = false;
 
-  async function loadCaption() {
-    loadingCaption = true;
+  function reset() {
+    newCaption = loadedCaption;
+  }
 
-    return filesystem
+  // Store state
+  $: {
+    if (newCaption && newCaption != loadedCaption) {
+      captionCache.set(lastPath, newCaption);
+    } else {
+      captionCache.delete(lastPath);
+    }
+    unsavedPaths = Array.from(captionCache.keys());
+  }
+
+  $: if (selectedPath) {
+    // Set new state
+    lastPath = selectedPath;
+    newCaption = "";
+
+    // Start loading
+    loadingCaption = true;
+    filesystem
       .readFile(captionPath)
       .then((result) => {
         loadedCaption = result;
@@ -31,33 +49,10 @@
         loadedCaption = "";
       })
       .finally(() => (loadingCaption = false));
-  }
-
-  function reset() {
-    loadCaption();
-    newCaption = loadedCaption;
-  }
-
-  // Store state
-  $: if (newCaption && newCaption != loadedCaption) {
-    captionCache.set(lastPath, newCaption);
-    unsavedPaths = Array.from(captionCache.keys());
-  } else captionCache.delete(lastPath);
-
-  $: if (selectedPath) {
-    // Set new state
-    lastPath = selectedPath;
-    newCaption = "";
-
-    const cached = captionCache.get(selectedPath);
-    loadedCaption = cached ?? "";
-
-    // Start loading
-    if (!cached) loadCaption();
   } else {
     loadedCaption = "";
   }
-  $: newCaption = loadedCaption;
+  $: newCaption = captionCache.get(selectedPath) ?? loadedCaption;
 
   $: ready = selectedPath && !loadingCaption;
 </script>

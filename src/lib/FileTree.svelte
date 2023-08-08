@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { faCaretDown, faCaretLeft, faFolder, faImage } from "@fortawesome/free-solid-svg-icons";
+  import { faAsterisk, faCaretDown, faCaretLeft, faFolder, faImage } from "@fortawesome/free-solid-svg-icons";
   import { onMount } from "svelte";
   import Fa from "svelte-fa";
   import LoadingOverlay from "./LoadingOverlay.svelte";
@@ -9,6 +9,7 @@
   export let path = "";
   export let level = 0;
   export let selectedPath: string | null = null;
+  export let unsavedPaths: string[] = [];
   let classes = "";
   export { classes as class };
 
@@ -54,11 +55,26 @@
 
   $: if (path) {
     error = "";
-    loading = true;
-    loadFiles(path)
-      .then((result) => (files = result))
-      .catch((err) => (error = err.toString()))
-      .finally(() => (loading = false));
+
+    if (level) {
+      loading = true;
+      openFolders = [];
+      loadFiles(path)
+        .then((result) => (files = result))
+        .catch((err) => (error = err.toString()))
+        .finally(() => (loading = false));
+    } else {
+      loading = false;
+      openFolders = [path];
+      files = [
+        {
+          ext: "",
+          isDirectory: true,
+          name: path.split("/").slice(-1)[0],
+          path,
+        },
+      ];
+    }
   }
 </script>
 
@@ -74,10 +90,17 @@
     {@const isOpen = openFolders.includes(file.path)}
     <li>
       <button
-        class={"flex w-full items-center whitespace-nowrap bg-opacity-50 px-2 py-1 hover:bg-zinc-800" +
-          (selectedPath?.startsWith(file.path) ? " -ml-px border-l border-accent text-accent" : "")}
+        class={[
+          "relative flex w-full items-center whitespace-nowrap bg-opacity-50 px-4 py-1 hover:bg-zinc-800",
+          unsavedPaths.some((v) => v.startsWith(file.path)) ? "border-modified text-modified" : "",
+          selectedPath?.startsWith(file.path) ? "-ml-px border-l border-accent !text-accent" : "",
+        ].join(" ")}
         on:click={getClickHandler(file)}
       >
+        {#if unsavedPaths.includes(file.path)}
+          <Fa icon={faAsterisk} class="absolute left-2 top-0 text-modified" />
+        {/if}
+
         <Fa icon={file.isDirectory ? faFolder : faImage} class="mr-2 inline-block" />
         <span>{file.name}</span>
 
@@ -87,7 +110,7 @@
       </button>
 
       {#if file.isDirectory && isOpen}
-        <svelte:self path={file.path} bind:selectedPath level={level + 1} />
+        <svelte:self {unsavedPaths} path={file.path} bind:selectedPath level={level + 1} />
       {/if}
     </li>
   {/each}
