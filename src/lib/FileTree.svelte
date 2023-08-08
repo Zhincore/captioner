@@ -1,7 +1,9 @@
 <script lang="ts">
   import { faCaretDown, faCaretLeft, faFolder, faImage } from "@fortawesome/free-solid-svg-icons";
+  import { onMount } from "svelte";
   import Fa from "svelte-fa";
   import LoadingOverlay from "./LoadingOverlay.svelte";
+  import { appEvents } from "./events";
   import { loadFiles, type FileEntry } from "./files";
 
   export let path = "";
@@ -28,6 +30,28 @@
     return () => (selectedPath = file.path == selectedPath ? null : file.path);
   }
 
+  function selectSibling(direction: 1 | -1) {
+    console.log(selectedPath, path);
+    if (!selectedPath || !selectedPath.startsWith(path)) return;
+
+    const index = files.findIndex((v) => v.path == selectedPath);
+    if (index == -1) return;
+
+    selectedPath = files[(files.length + (index + direction)) % files.length].path;
+  }
+
+  onMount(() => {
+    const onNext = () => selectSibling(1);
+    const onPrev = () => selectSibling(-1);
+    appEvents.on("nextFile", onNext);
+    appEvents.on("prevFile", onPrev);
+
+    return () => {
+      appEvents.off("nextFile", onNext);
+      appEvents.off("prevFile", onPrev);
+    };
+  });
+
   $: if (path) {
     error = "";
     loading = true;
@@ -38,7 +62,14 @@
   }
 </script>
 
-<ul class={"h-full border-zinc-600 " + classes} class:overflow-auto={!level} class:ml-4={level} class:border-l={level}>
+<ul
+  class={"relative h-full border-zinc-600 " + classes}
+  class:overflow-auto={!level}
+  class:ml-4={level}
+  class:border-l={level}
+>
+  {#if loading}<LoadingOverlay />{/if}
+
   {#each files as file (file.path)}
     {@const isOpen = openFolders.includes(file.path)}
     <li>

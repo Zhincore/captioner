@@ -1,12 +1,10 @@
 <script lang="ts">
   import { faImage } from "@fortawesome/free-solid-svg-icons";
   import { filesystem } from "@neutralinojs/lib";
-  import { createEventDispatcher, tick } from "svelte";
+  import { tick } from "svelte";
   import Fa from "svelte-fa";
-  import CapitionPane, { type CaptionEvents } from "./CapitionPane.svelte";
+  import CapitionPane from "./CapitionPane.svelte";
   import LoadingOverlay from "./LoadingOverlay.svelte";
-
-  const event = createEventDispatcher<CaptionEvents>();
 
   export let selectedPath: string | null = null;
   export let unsavedPaths: string[] = [];
@@ -63,11 +61,5 @@
     {#if loadingImage}<LoadingOverlay />{/if}
   </div>
 
-  <CapitionPane
-    {selectedPath}
-    {horizontal}
-    bind:unsavedPaths
-    on:next={event.bind(null, ["next"])}
-    on:previous={event.bind(null, ["previous"])}
-  />
+  <CapitionPane {selectedPath} {horizontal} bind:unsavedPaths />
 </main>

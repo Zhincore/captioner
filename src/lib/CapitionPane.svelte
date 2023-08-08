@@ -1,17 +1,10 @@
-<script lang="ts" context="module">
-  export type CaptionEvents = {
-    next: null;
-    previous: null;
-  };
-</script>
-
 <script lang="ts">
   import { faBackward, faForward, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
   import { filesystem } from "@neutralinojs/lib";
-  import { createEventDispatcher } from "svelte";
   import Fa from "svelte-fa";
   import LoadingOverlay from "./LoadingOverlay.svelte";
   import Scaler from "./Scaler.svelte";
+  import { appEvents } from "./events";
 
   export let selectedPath: string | null = null;
   export let unsavedPaths: string[] = [];
@@ -21,40 +14,46 @@
   let size = 100;
 
   const captionCache = new Map<string, string>();
-  const event = createEventDispatcher<CaptionEvents>();
   $: captionPath = selectedPath ? selectedPath.split(".").slice(0, -1).join(".") + ".txt" : "";
   let loadedCaption = "";
   let lastPath = selectedPath;
-  let newCaption = loadedCaption;
   let loadingCaption = false;
+
+  async function loadCaption() {
+    loadingCaption = true;
+
+    return filesystem
+      .readFile(captionPath)
+      .then((result) => {
+        loadedCaption = result;
+      })
+      .catch(() => {
+        loadedCaption = "";
+      })
+      .finally(() => (loadingCaption = false));
+  }
+
+  function reset() {
+    loadCaption();
+    newCaption = loadedCaption;
+  }
 
   // Store state
   $: if (newCaption && newCaption != loadedCaption) {
     captionCache.set(lastPath, newCaption);
     unsavedPaths = Array.from(captionCache.keys());
-  }
+  } else captionCache.delete(lastPath);
 
   $: if (selectedPath) {
     // Set new state
     lastPath = selectedPath;
+    newCaption = "";
 
     const cached = captionCache.get(selectedPath);
     loadedCaption = cached ?? "";
 
     // Start loading
-    loadingCaption = !cached;
-
-    if (!cached) {
-      filesystem
-        .readFile(captionPath)
-        .then((result) => {
-          loadedCaption = result;
-        })
-        .catch(() => {
-          loadedCaption = "";
-        })
-        .finally(() => (loadingCaption = false));
-    }
+    if (!cached) loadCaption();
   } else {
     loadedCaption = "";
   }
@@ -80,11 +79,11 @@
   />
 
   <div class="flex gap-1 whitespace-nowrap">
-    <button class="w-1/2 bg-zinc-800 p-2 hover:bg-zinc-700" on:click={() => event("previous")}>
+    <button class="w-1/2 bg-zinc-800 p-2 hover:bg-zinc-700" on:click={() => appEvents.emit("prevFile")}>
       <Fa icon={faBackward} class="mr-2 inline-block" />
       Previous
     </button>
-    <button class="bg-zinc-800 p-2 hover:bg-zinc-700">
+    <button class="bg-zinc-800 p-2 hover:bg-zinc-700" on:click={reset}>
       <Fa icon={faUndo} class="mr-2 inline-block" />
       Reset
     </button>
@@ -92,7 +91,7 @@
       <Fa icon={faSave} class="mr-2 inline-block" />
       Save
     </button>
-    <button class="w-1/2 bg-zinc-800 p-2 hover:bg-zinc-700" on:click={() => event("next")}>
+    <button class="w-1/2 bg-zinc-800 p-2 hover:bg-zinc-700" on:click={() => appEvents.emit("nextFile")}>
       Next
       <Fa icon={faForward} class="ml-2 inline-block" />
     </button>

@@ -13,15 +13,6 @@
   async function openFolder() {
     path = await os.showFolderDialog();
   }
-
-  // function selectSibling(direction: 1 | -1) {
-  //   if (!selectedPath) return;
-
-  //   const index = filterFiles(files).findIndex((v) => v.entry == selectedPath);
-  //   if (index == -1) return;
-
-  //   selectedPath = files[(files.length + (index + direction)) % files.length].entry;
-  // }
 </script>
 
 {#if !path}
