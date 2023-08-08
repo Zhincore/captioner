@@ -9,6 +9,7 @@
   const event = createEventDispatcher<CaptionEvents>();
 
   export let selectedPath: string | null = null;
+  export let unsavedPaths: string[] = [];
 
   let img: HTMLImageElement | null = null;
   let horizontal = false;
@@ -29,7 +30,7 @@
 <main class={["flex max-h-screen flex-grow gap-2 p-2", horizontal ? "flex-row" : "flex-col"].join(" ")}>
   <div
     class={[
-      "relative flex max-h-full max-w-full flex-grow items-center justify-center",
+      "relative flex max-h-full max-w-full flex-grow items-center justify-center bg-black bg-opacity-25",
       horizontal ? "h-full w-1/4" : "h-1/4 w-full",
     ].join(" ")}
   >
@@ -37,7 +38,7 @@
       <img
         bind:this={img}
         on:load={onLoad}
-        class="h-full w-auto object-contain"
+        class="h-auto max-h-full w-full max-w-full object-contain"
         src={convertFileSrc(selectedPath)}
         alt=""
       />
@@ -51,6 +52,7 @@
   <CapitionPane
     {selectedPath}
     {horizontal}
+    bind:unsavedPaths
     on:next={event.bind(null, ["next"])}
     on:previous={event.bind(null, ["previous"])}
   />

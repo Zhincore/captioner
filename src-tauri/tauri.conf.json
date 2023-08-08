@@ -25,10 +25,12 @@
         "all": false,
         "readFile": true,
         "writeFile": true,
-        "readDir": true
+        "readDir": true,
+        "scope": ["**"]
       },
       "protocol": {
-        "asset": true
+        "asset": true,
+        "assetScope": ["**"]
       }
     },
     "bundle": {

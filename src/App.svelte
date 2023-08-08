@@ -9,6 +9,7 @@
   let folder: string | null = import.meta.hot?.data.folder ?? null;
   let files: FileEntry[] = [];
   let selectedPath: string | null = null;
+  let unsavedPaths: string[];
   let loading = true;
   let error = "";
 
@@ -67,8 +68,8 @@
   {#if error}<div>{error}</div>{/if}
 
   <div class="flex h-screen w-screen">
-    <SidePane {folder} {files} {openFolder} bind:selectedPath />
+    <SidePane {folder} {files} {openFolder} {unsavedPaths} bind:selectedPath />
 
-    <MainPane {selectedPath} on:next={() => selectSibling(1)} on:previous={() => selectSibling(-1)} />
+    <MainPane {selectedPath} bind:unsavedPaths on:next={() => selectSibling(1)} on:previous={() => selectSibling(-1)} />
   </div>
 {/if}

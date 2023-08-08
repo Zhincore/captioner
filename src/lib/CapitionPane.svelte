@@ -14,7 +14,7 @@
   import Scaler from "./Scaler.svelte";
 
   export let selectedPath: string | null = null;
-  export let unsavedFiles: string[] = [];
+  export let unsavedPaths: string[] = [];
   export let horizontal = false;
 
   let ref: HTMLElement;
@@ -25,21 +25,19 @@
   $: captionPath = selectedPath ? selectedPath.split(".").slice(0, -1).join(".") + ".txt" : "";
   let loadedCaption = "";
   let lastPath = selectedPath;
-  let newCaption = loadedCaption;
   let loadingCaption = false;
 
-  $: {
-    selectedPath; // Dependency
-    unsavedFiles = Array.from(captionCache.keys());
+  // Store state
+  $: if (newCaption && newCaption != loadedCaption) {
+    captionCache.set(lastPath, newCaption);
+    unsavedPaths = Array.from(captionCache.keys());
   }
 
   $: if (selectedPath) {
-    // Save state
-    if (loadedCaption) captionCache.set(lastPath, loadedCaption);
-
     // Set new state
     lastPath = selectedPath;
     loadedCaption = captionCache.get(selectedPath) ?? "";
+    // newCaption = loadedCaption;
 
     // Start loading
     loadingCaption = !loadedCaption;
