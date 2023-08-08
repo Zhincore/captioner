@@ -1,10 +1,12 @@
 <script lang="ts">
   import { faBackward, faForward, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
   import { filesystem } from "@neutralinojs/lib";
+  import { onMount } from "svelte";
   import Fa from "svelte-fa";
   import LoadingOverlay from "./LoadingOverlay.svelte";
   import Scaler from "./Scaler.svelte";
   import { appEvents } from "./events";
+  import { getCaptionPath } from "./files";
 
   export let selectedPath: string | null = null;
   export let unsavedPaths: string[] = [];
@@ -14,7 +16,7 @@
   let size = 100;
 
   const captionCache = new Map<string, string>();
-  $: captionPath = selectedPath ? selectedPath.split(".").slice(0, -1).join(".") + ".txt" : "";
+  $: captionPath = selectedPath ? getCaptionPath(selectedPath) : "";
   let loadedCaption = "";
   let lastPath = selectedPath;
   let loadingCaption = false;
@@ -22,6 +24,33 @@
   function reset() {
     newCaption = loadedCaption;
   }
+
+  function save() {
+    loadingCaption = true;
+    filesystem
+      .writeFile(captionPath, newCaption)
+      .then(() => (loadedCaption = newCaption))
+      .finally(() => (loadingCaption = false));
+  }
+
+  onMount(() => {
+    const saveAll = async () => {
+      const promises = [];
+      for (const [imgPath, caption] of captionCache) {
+        promises.push(filesystem.writeFile(getCaptionPath(imgPath), caption));
+      }
+      captionCache.clear();
+      loadedCaption = newCaption;
+      unsavedPaths = Array.from(captionCache.keys());
+      return Promise.all(promises);
+    };
+
+    appEvents.on("saveAllFiles", saveAll);
+
+    return () => {
+      appEvents.off("saveAllFiles", saveAll);
+    };
+  });
 
   // Store state
   $: {
@@ -52,7 +81,7 @@
   } else {
     loadedCaption = "";
   }
-  $: newCaption = captionCache.get(selectedPath) ?? loadedCaption;
+  $: newCaption = captionCache.get(lastPath) ?? loadedCaption;
 
   $: ready = selectedPath && !loadingCaption;
 </script>
@@ -74,19 +103,35 @@
   />
 
   <div class="flex gap-1 whitespace-nowrap">
-    <button class="w-1/2 bg-zinc-800 p-2 hover:bg-zinc-700" on:click={() => appEvents.emit("prevFile")}>
+    <button
+      class="w-1/2 bg-zinc-800 p-2 transition hover:bg-zinc-700 disabled:bg-zinc-800 disabled:text-zinc-500"
+      disabled={!selectedPath}
+      on:click={() => appEvents.emit("prevFile")}
+    >
       <Fa icon={faBackward} class="mr-2 inline-block" />
       Previous
     </button>
-    <button class="bg-zinc-800 p-2 hover:bg-zinc-700" on:click={reset}>
+    <button
+      class="bg-zinc-800 p-2 transition hover:bg-zinc-700 disabled:bg-zinc-800 disabled:text-zinc-500"
+      on:click={reset}
+      disabled={!selectedPath || newCaption == loadedCaption}
+    >
       <Fa icon={faUndo} class="mr-2 inline-block" />
       Reset
     </button>
-    <button class="w-full bg-zinc-800 p-2 hover:bg-zinc-700">
+    <button
+      class="w-full bg-zinc-800 p-2 transition hover:bg-zinc-700 disabled:bg-zinc-800 disabled:text-zinc-500"
+      on:click={save}
+      disabled={!selectedPath || newCaption == loadedCaption}
+    >
       <Fa icon={faSave} class="mr-2 inline-block" />
       Save
     </button>
-    <button class="w-1/2 bg-zinc-800 p-2 hover:bg-zinc-700" on:click={() => appEvents.emit("nextFile")}>
+    <button
+      class="w-1/2 bg-zinc-800 p-2 transition hover:bg-zinc-700 disabled:bg-zinc-800 disabled:text-zinc-500"
+      disabled={!selectedPath}
+      on:click={() => appEvents.emit("nextFile")}
+    >
       Next
       <Fa icon={faForward} class="ml-2 inline-block" />
     </button>

@@ -9,6 +9,10 @@ export interface FileEntry {
   isDirectory: boolean;
 }
 
+export function getCaptionPath(imagePath: string) {
+  return imagePath.split(".").slice(0, -1).join(".") + ".txt";
+}
+
 export async function loadFiles(path: string) {
   const files = await filesystem.readDirectory(path);
   const entries: FileEntry[] = [];

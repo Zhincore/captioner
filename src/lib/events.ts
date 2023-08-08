@@ -4,7 +4,6 @@ export interface AppEvents {
   nextFile: () => void;
   prevFile: () => void;
   resetCaption: () => void;
-  saveFile: () => void;
   saveAllFiles: () => void;
 }
 

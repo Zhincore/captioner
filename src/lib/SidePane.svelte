@@ -3,6 +3,7 @@
   import Fa from "svelte-fa";
   import FileTree from "./FileTree.svelte";
   import Scaler from "./Scaler.svelte";
+  import { appEvents } from "./events";
 
   export let path = "";
   export let openFolder: () => void;
@@ -25,7 +26,11 @@
       Change folder
     </button>
 
-    <button class="w-full px-4 py-2 hover:bg-zinc-800" class:invisible={!unsavedPaths.length} on:click={openFolder}>
+    <button
+      class="w-full px-4 py-2 hover:bg-zinc-800"
+      class:invisible={!unsavedPaths.length}
+      on:click={() => appEvents.emit("saveAllFiles")}
+    >
       <Fa icon={faSave} class="mr-3 inline-block" />
 
       Save {unsavedPaths.length} files

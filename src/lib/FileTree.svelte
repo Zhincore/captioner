@@ -91,9 +91,9 @@
     <li>
       <button
         class={[
-          "relative flex w-full items-center whitespace-nowrap bg-opacity-50 px-4 py-1 hover:bg-zinc-800",
-          unsavedPaths.some((v) => v.startsWith(file.path)) ? "border-modified text-modified" : "",
-          selectedPath?.startsWith(file.path) ? "-ml-px border-l border-accent !text-accent" : "",
+          "relative -ml-px flex w-full items-center whitespace-nowrap border-l border-transparent bg-opacity-50 px-4 py-1 transition hover:bg-zinc-800",
+          unsavedPaths.some((v) => v.startsWith(file.path)) ? "!border-modified text-modified" : "",
+          selectedPath?.startsWith(file.path) ? "!border-accent !text-accent" : "",
         ].join(" ")}
         on:click={getClickHandler(file)}
       >
