@@ -11,7 +11,6 @@
 
   let imageUrl: string | null = null;
   let img: HTMLImageElement | null = null;
-  let horizontal = false;
 
   let loadingImage = false;
 
@@ -39,21 +38,10 @@
   }
 </script>
 
-<main class={["flex max-h-screen flex-grow gap-2 p-2", horizontal ? "flex-row" : "flex-col"].join(" ")}>
-  <div
-    class={[
-      "relative flex max-h-full max-w-full flex-grow items-center justify-center bg-black bg-opacity-25",
-      horizontal ? "h-full w-1/4" : "h-1/4 w-full",
-    ].join(" ")}
-  >
+<main class="flex h-full flex-grow flex-col gap-2 p-2">
+  <div class="relative flex h-1/4 max-h-full flex-grow items-center justify-center bg-black bg-opacity-25">
     {#if imageUrl}
-      <img
-        bind:this={img}
-        on:load={onLoad}
-        src={imageUrl}
-        alt=""
-        class="h-auto max-h-full w-full max-w-full object-contain"
-      />
+      <img bind:this={img} on:load={onLoad} src={imageUrl} alt="" class="h-auto max-h-full w-full object-contain" />
     {:else}
       <Fa icon={faImage} scale="2xl" />
     {/if}
@@ -61,5 +49,5 @@
     {#if loadingImage}<LoadingOverlay />{/if}
   </div>
 
-  <CapitionPane {selectedPath} {horizontal} bind:unsavedPaths />
+  <CapitionPane {selectedPath} bind:unsavedPaths />
 </main>

@@ -39,7 +39,6 @@
     if (index == -1) return;
 
     selectedPath = files[(files.length + (index + direction)) % files.length].path;
-    items[selectedPath].focus();
   }
 
   onMount(() => {

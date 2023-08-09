@@ -12,9 +12,10 @@ I needed an easy way to see the caption and the image I am captioning at the sam
 
 ## Keyboard Shortcuts
 
-- `ArrowUp` - (when caption is not focused) Open previous image in folder
-- `ArrowDown` - (when caption is not focused) Open next image in folder
+- `PageUp` (or `ArrowUp` when caption is not focused) - Open previous image in folder
+- `PageDown` (or `ArrowDown` when caption is not focused) - Open next image in folder
 - `Ctrl`+`S` - Save currently open caption
+- `Ctrl`+`Alt`+`S` - Save all unsaved captions
 
 ## Installation
 

@@ -18,9 +18,11 @@
   async function onKeyDown(ev: KeyboardEvent) {
     let acted = true;
     switch (ev.key) {
+      case "PageUp":
       case "ArrowUp":
         appEvents.emit("prevFile");
         break;
+      case "PageDown":
       case "ArrowDown":
         appEvents.emit("nextFile");
         break;
@@ -31,7 +33,11 @@
   }
   async function onKeyDownCapture(ev: KeyboardEvent) {
     if (ev.ctrlKey && ev.key == "s") {
-      appEvents.emit("saveFile");
+      if (ev.altKey) {
+        appEvents.emit("saveAllFiles");
+      } else {
+        appEvents.emit("saveFile");
+      }
       ev.preventDefault();
     }
   }

@@ -10,7 +10,6 @@
 
   export let selectedPath: string | null = null;
   export let unsavedPaths: string[] = [];
-  export let horizontal = false;
 
   let ref: HTMLElement;
   let size = 100;
@@ -86,19 +85,24 @@
   $: newCaption = captionCache.get(lastPath) ?? loadedCaption;
 
   $: ready = selectedPath && !loadingCaption;
+
+  function onKeyDown(ev: KeyboardEvent) {
+    // Prevent arrow key function to be overridden when writing caption
+    if (ev.key.startsWith("Arrow")) ev.stopPropagation();
+  }
 </script>
 
 <div
   bind:this={ref}
   class="relative flex h-full min-h-[8rem] w-full flex-col"
-  style="{horizontal ? 'width' : 'height'}: {size ? size + 'px' : 'unset'}"
+  style:height={size ? size + "px" : "unset"}
 >
   <Scaler reference={ref} bind:size direction="top" />
 
   {#if loadingCaption}<LoadingOverlay />{/if}
 
   <textarea
-    on:keydown|stopPropagation
+    on:keydown={onKeyDown}
     class="h-full w-full resize-none bg-black bg-opacity-50 px-2 py-1 text-white placeholder:text-zinc-600 disabled:opacity-50"
     disabled={!ready}
     placeholder={selectedPath ? "A photo of an image with a caption" : "Choose an image in the left panel"}
