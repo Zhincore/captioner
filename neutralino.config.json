@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/neutralinojs/neutralinojs/main/schemas/neutralino.config.schema.json",
   "applicationId": "eu.zhincore.captioner",
   "version": "1.0.0",
-  "defaultMode": "browser",
+  "defaultMode": "window",
   "port": 0,
   "documentRoot": "/build/",
   "url": "/",
@@ -23,7 +23,9 @@
   "globalVariables": {},
   "modes": {
     "window": {
-      "icon": "/captioner.png"
+      "icon": "/captioner.png",
+      "title": "Captioner",
+      "exitProcessOnClose": true
     }
   },
   "cli": {
