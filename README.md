@@ -26,7 +26,7 @@ Built on [Neutralinojs](https://neutralino.js.org/) and [Svelte](https://svelte.
 This project doesn't have an installer, it's a single binary and a resources file.  
 Here is what you need to do to get it running:
 
-1. Download the right zip for your system from the [GitHub releases page](https://github.com/Zhincore/dynmap-trains/releases/latest).
+1. Download the right zip for your system from the [GitHub releases page](https://github.com/Zhincore/captioner/releases/latest).
 2. Unzip it in location of your choice.
 3. Continue with the [Usage section](#usage)
 
