@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "concurrently -k 'vite' 'neu run --frontend-lib-dev'",
     "build": "vite build && neu build",
+    "dist": "pnpm build && ./pack.sh",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "lint": "eslint --fix src",
